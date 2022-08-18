@@ -4,7 +4,7 @@ import time
 import pathlib
 from datetime import datetime
 
-from cfg import target_dirpath_dict, excluded_filenames
+from .cfg import target_dirpath_dict, excluded_filenames
 
 
 class FilesCleaner:
