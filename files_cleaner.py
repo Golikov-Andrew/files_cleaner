@@ -52,7 +52,7 @@ class FilesCleaner:
                             self.__count_of_deleted_files += 1
 
     def set_interval(self, seconds: int):
-        self.log(f'interval_sec={interval_sec}',)
+        self.log(f'interval_sec={seconds}',)
         while True:
             self.log('start iteration',)
             self.reset_count_of_deleted_files()
