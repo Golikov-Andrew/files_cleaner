@@ -8,3 +8,6 @@ target_dirpath_dict = {
 excluded_filenames = [
     '.gitignore'
 ]
+
+is_logging_enabled = True
+log_filepath = os.path.join('files_cleaner.log')

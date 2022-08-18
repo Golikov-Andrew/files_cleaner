@@ -3,3 +3,4 @@ one_else_target_dir
 cfg.py
 .idea
 **__pycache__
+files_cleaner.log

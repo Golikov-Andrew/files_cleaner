@@ -7,7 +7,8 @@ from datetime import datetime
 
 class FilesCleaner:
 
-    def __init__(self, target_dirpathes_dict: dict, excluded_filename_list=None):
+    def __init__(self, target_dirpathes_dict: dict, excluded_filename_list=None,
+                 is_logging_enabled=False, log_filepath='files_cleaner.log'):
         """Чистильщик файлов"""
 
         if excluded_filename_list is None:
@@ -25,6 +26,18 @@ class FilesCleaner:
             raise Exception(f'Неверный тип параметра target_dirpathes_dict: {type(target_dirpathes_dict)}. Нужен dict')
 
         self.__count_of_deleted_files = 0
+        self.__is_logging_enabled = is_logging_enabled
+        self.__log_filepath = log_filepath
+
+    def log(self, *messages):
+        result_text = [str(datetime.now())]
+        result_text.extend([*messages])
+        result_text = [str(i) for i in result_text]
+        text = '\t'.join(result_text)
+        print(text)
+        if self.__is_logging_enabled:
+            with open(self.__log_filepath, 'a') as f:
+                f.write(text + '\n')
 
     def clear_dirs(self):
         for target_dir, lifetime_in_seconds in self.__target_dirpath_dict.items():
@@ -34,16 +47,17 @@ class FilesCleaner:
                     target_file = pathlib.Path(filepath)
                     if datetime.now().timestamp() - target_file.stat().st_mtime > lifetime_in_seconds:
                         if filename not in self.__excluded_filenames:
-                            print(datetime.now(), 'delete file ->', filepath, sep='\t')
+                            self.log('delete file ->', filepath)
                             os.remove(target_file)
                             self.__count_of_deleted_files += 1
 
     def set_interval(self, seconds: int):
+        self.log(f'interval_sec={interval_sec}',)
         while True:
-            print(datetime.now(), 'start iteration', sep='\t')
+            self.log('start iteration',)
             self.reset_count_of_deleted_files()
             self.clear_dirs()
-            print(datetime.now(), 'total files deleted ->', self.get_count_of_deleted_files(), sep='\t')
+            self.log('total files deleted ->', self.get_count_of_deleted_files())
             time.sleep(seconds)
 
     def set_excluded_files(self, files: list):
@@ -57,7 +71,7 @@ class FilesCleaner:
 
 
 if __name__ == '__main__':
-    from cfg import target_dirpath_dict, excluded_filenames
+    from cfg import target_dirpath_dict, excluded_filenames, is_logging_enabled, log_filepath
 
     args = sys.argv
     interval_sec = 60 * 60 * 24
@@ -66,11 +80,11 @@ if __name__ == '__main__':
             interval_sec = int(float(arg.split('=')[1]))
             break
 
-    print(f'interval_sec={interval_sec}')
-
     f_cleaner = FilesCleaner(
         target_dirpathes_dict=target_dirpath_dict,
-        excluded_filename_list=excluded_filenames
+        excluded_filename_list=excluded_filenames,
+        is_logging_enabled=is_logging_enabled,
+        log_filepath=log_filepath
     )
 
     f_cleaner.set_interval(interval_sec)
