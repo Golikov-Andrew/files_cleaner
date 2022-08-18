@@ -4,8 +4,6 @@ import time
 import pathlib
 from datetime import datetime
 
-from cfg import target_dirpath_dict, excluded_filenames
-
 
 class FilesCleaner:
 
@@ -59,6 +57,8 @@ class FilesCleaner:
 
 
 if __name__ == '__main__':
+    from cfg import target_dirpath_dict, excluded_filenames
+
     args = sys.argv
     interval_sec = 60 * 60 * 24
     for arg in args:
