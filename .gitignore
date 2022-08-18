@@ -2,3 +2,4 @@ target_dir
 one_else_target_dir
 cfg.py
 .idea
+**__pycache__
