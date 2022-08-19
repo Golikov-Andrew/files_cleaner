@@ -1,4 +1,5 @@
 import os
+import glob
 import sys
 import time
 import pathlib
@@ -40,16 +41,18 @@ class FilesCleaner:
                 f.write(text + '\n')
 
     def clear_dirs(self):
-        for target_dir, lifetime_in_seconds in self.__target_dirpath_dict.items():
-            for filename in os.listdir(target_dir):
-                filepath = os.path.join(target_dir, filename)
+        for target_filepathes_pattern, lifetime_sec in self.__target_dirpath_dict.items():
+            target_filepathes = glob.glob(target_filepathes_pattern)
+            for filepath in target_filepathes:
+                filename = filepath.split('/')[-1]
+                if filename in self.__excluded_filenames:
+                    continue
                 if not os.path.isdir(filepath):
                     target_file = pathlib.Path(filepath)
-                    if datetime.now().timestamp() - target_file.stat().st_mtime > lifetime_in_seconds:
-                        if filename not in self.__excluded_filenames:
-                            self.log('delete file ->', filepath)
-                            os.remove(target_file)
-                            self.__count_of_deleted_files += 1
+                    if datetime.now().timestamp() - target_file.stat().st_mtime > lifetime_sec:
+                        self.log('delete file ->', filepath)
+                        os.remove(target_file)
+                        self.__count_of_deleted_files += 1
 
     def set_interval(self, seconds: int):
         self.log(f'interval_sec={seconds}',)
